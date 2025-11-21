@@ -1,7 +1,7 @@
 [theme]
-base = "light"             # 밝은 배경
-primaryColor = "#22B3E8"   # 물, 파란색 느낌
-backgroundColor = "#E0F7FA" # 연한 하늘색/민트색
-secondaryBackgroundColor = "#B2EBF2" # 메뉴, 카드용 연한 색
-textColor = "#004D61"       # 글자색: 바다색
-font = "sans serif"         # 깔끔한 글꼴
+base = "light"             
+primaryColor = "#22B3E8"   
+backgroundColor = "#E0F7FA"
+secondaryBackgroundColor = "#B2EBF2"
+textColor = "#004D61"      
+font = "sans serif"         
