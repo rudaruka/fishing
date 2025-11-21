@@ -1,164 +1,101 @@
+~~~{"variant":"standard","title":"Streamlit 낚시 게임","id":"98642"}
+import streamlit as st
 import random
-import time
 
-coin = 0
-# 물고기 종류 저장
+# 세션 상태 초기화
+if "coin" not in st.session_state:
+    st.session_state.coin = 0
+if "inventory" not in st.session_state:
+    st.session_state.inventory = []
+
 물고기종류 = ["누치", "정어리", "붕어", "빙어", "북어", "전갱이", "꽁치", "은어", "노래미", "고등어", "메기", "잉어", "쥐치",
          "볼락", "열기", "줄돔", "삼치", "병어", "향어", "우럭", "송어", "해파리", "꼴뚜기", "넙치", "광어", "농어", "가물치",
          "방어", "바다송어", "해마", "연어", "쭈꾸미", "아귀", "한치", "오징어", "참치", "홍어", "랍스터", "가오리", "상어", "문어", "발광오징어", "킹크랩", "전복"]
 
-인벤토리 = []  # 잡은 물고기 저장
+st.title("🎣 낚시 게임")
 
-print("=== 낚시 게임 ===")
-print("입장하려면 !입장 을 입력해주세요")
-시작 = input("!입장 입력: ")
+menu = st.sidebar.selectbox("메뉴 선택", ["로비", "낚시터", "상점", "인벤토리", "코인", "게임 종료"])
 
-if 시작 == "!입장":
-    print("입장합니다!")
-    time.sleep(1)
+# --------- 로비 ----------
+if menu == "로비":
+    st.write("로비에 입장했습니다. 메뉴에서 이동할 곳을 선택하세요.")
 
-    # --------- 로비 루프 ----------
-    while True:
-        print("\n===== 로비 =====")
-        print("1. 낚시터로 가기")
-        print("2. 상점으로 가기")
-        print("3. 인벤토리 확인")
-        print("4. 코인 확인")
-        print("5. 게임 종료")
-        선택 = input("번호를 선택하세요: ")
+# --------- 낚시터 ----------
+elif menu == "낚시터":
+    st.subheader("낚시터에 도착했습니다!")
+    시도횟수 = st.radio("몇 번 도전하시겠습니까?", [1, 2])
+    if st.button("낚시 시작"):
+        for _ in range(시도횟수):
+            랜덤물고기 = random.choice(물고기종류)
+            st.write(f"🎣 잡힌 물고기: {랜덤물고기}")
+            st.session_state.inventory.append(랜덤물고기)
 
-        # ---------------- 낚시터 ----------------
-        if 선택 == "1":
-            print("\n낚시터에 도착했습니다!")
-            time.sleep(1)
+# --------- 상점 ----------
+elif menu == "상점":
+    st.subheader("상점에 도착했습니다!")
+    if not st.session_state.inventory:
+        st.write("인벤토리에 물고기가 없습니다. 낚시터로 가세요!")
+    else:
+        판매물고기 = st.selectbox("판매할 물고기 선택", st.session_state.inventory)
+        if st.button("판매"):
+            price = 0
+            if 판매물고기 in ["복어", "멸치"]:
+                price = 10
+            elif 판매물고기 in ["누치", "정어리"]:
+                price = 15
+            elif 판매물고기 in ["붕어", "빙어", "북어", "전갱이", "꽁치"]:
+                price = 20
+            elif 판매물고기 in ["은어"]:
+                price = 25
+            elif 판매물고기 in ["노래미", "고등어", "메기", "잉어"]:
+                price = 30
+            elif 판매물고기 in ["쥐치", "볼락", "열기", "줄돔", "향어"]:
+                price = 35
+            elif 판매물고기 in ["삼치", "병어"]:
+                price = 40
+            elif 판매물고기 in ["우럭", "송어", "연어"]:
+                price = 45
+            elif 판매물고기 in ["해파리"]:
+                price = 50
+            elif 판매물고기 in ["꼴뚜기", "넙치"]:
+                price = 60
+            elif 판매물고기 in ["광어", "농어", "가물치"]:
+                price = 70
+            elif 판매물고기 in ["방어", "바다송어", "해마"]:
+                price = 75
+            elif 판매물고기 in ["쭈꾸미"]:
+                price = 80
+            elif 판매물고기 in ["아귀", "한치"]:
+                price = 85
+            elif 판매물고기 in ["오징어"]:
+                price = 90
+            elif 판매물고기 in ["참치", "홍어"]:
+                price = 95
+            elif 판매물고기 in ["랍스터", "가오리"]:
+                price = 110
+            elif 판매물고기 in ["상어", "문어", "발광오징어", "킹크랩", "전복"]:
+                price = 120
 
-            시도횟수 = input("몇 번 도전하시겠습니까? [1/2]: ")
-            if 시도횟수 not in ["1", "2"]:
-                print("잘못 입력했습니다. 1 또는 2를 입력해주세요.")
-                continue
+            st.session_state.inventory.remove(판매물고기)
+            st.session_state.coin += price
+            st.write(f"{판매물고기}을(를) 팔았습니다! 가격: {price}코인")
+            st.write(f"현재 코인: {st.session_state.coin}원")
 
-            랜덤물고기1 = random.choice(물고기종류)
-            print(f"뽑힌 물고기: {랜덤물고기1}")
-            인벤토리.append(랜덤물고기1)
-            time.sleep(0.3)
+# --------- 인벤토리 ----------
+elif menu == "인벤토리":
+    st.subheader("인벤토리")
+    if st.session_state.inventory:
+        st.write(st.session_state.inventory)
+    else:
+        st.write("인벤토리가 비어 있습니다.")
 
-            if 시도횟수 == "2":
-                랜덤물고기2 = random.choice(물고기종류)
-                print(f"뽑힌 물고기: {랜덤물고기2}")
-                인벤토리.append(랜덤물고기2)
-                time.sleep(0.3)
+# --------- 코인 ----------
+elif menu == "코인":
+    st.subheader("코인 확인")
+    st.write(f"현재 코인: {st.session_state.coin}원")
 
-        # ---------------- 상점 ----------------
-        elif 선택 == "2":
-            if not 인벤토리:
-                print("인벤토리에 물고기가 없습니다. 낚시터로 가세요!")
-                continue
-
-            print("\n상점에 도착했습니다!")
-            time.sleep(1)
-
-            방문횟수 = 0
-
-            while True:
-                방문횟수 += 1
-
-                if 방문횟수 == 1:
-                    print("\n상인: 어떤 물고기를 팔건가?")
-                else:
-                    print("\n상인: 또 어떤 물고기를 팔건가?")
-                time.sleep(0.5)
-
-                print("인벤토리:", 인벤토리)
-                물고기1 = input("판매할 물고기 이름 입력: ")
-                time.sleep(0.5)
-
-                if 물고기1 not in 인벤토리:
-                    print("인벤토리에 없는 물고기입니다!")
-                    continue
-
-                # ---------------- 물고기 가격 계산 ----------------
-                price = 0  # 기본값
-
-                if 물고기1 in ["복어", "멸치"]:
-                    price = 10
-                elif 물고기1 in ["누치", "정어리"]:
-                    price = 15
-                elif 물고기1 in ["붕어", "빙어", "북어", "전갱이", "꽁치"]:
-                    price = 20
-                elif 물고기1 in ["은어"]:
-                    price = 25
-                elif 물고기1 in ["노래미", "고등어", "메기", "잉어"]:
-                    price = 30
-                elif 물고기1 in ["쥐치", "볼락", "열기", "줄돔", "향어"]:
-                    price = 35
-                elif 물고기1 in ["삼치", "병어"]:
-                    price = 40
-                elif 물고기1 in ["우럭", "송어", "연어"]:
-                    price = 45
-                elif 물고기1 in ["해파리"]:
-                    price = 50
-                elif 물고기1 in ["꼴뚜기", "넙치"]:
-                    price = 60
-                elif 물고기1 in ["광어", "농어", "가물치"]:
-                    price = 70
-                elif 물고기1 in ["방어", "바다송어", "해마"]:
-                    price = 75
-                elif 물고기1 in ["쭈꾸미"]:
-                    price = 80
-                elif 물고기1 in ["아귀", "한치"]:
-                    price = 85
-                elif 물고기1 in ["오징어"]:
-                    price = 90
-                elif 물고기1 in ["참치"]:
-                    price = 95
-                elif 물고기1 in ["홍어"]:
-                    price = 95
-                elif 물고기1 in ["랍스터", "가오리"]:
-                    price = 110
-                elif 물고기1 in ["상어", "문어", "발광오징어", "킹크랩", "전복"]:
-                    price = 120
-
-                # ---------------- 판매 처리 ----------------
-                인벤토리.remove(물고기1)
-                coin += price
-
-                print(f"{물고기1}을(를) 팔았습니다! 가격: {price} 코인입니다.")
-                print(f"현재 코인: {coin}원")
-
-                if not 인벤토리:
-                    print("더 이상 팔 물고기가 없습니다. 상점을 나갑니다.")
-                    time.sleep(0.3)
-                    break
-
-                다시팔기 = input("다른 물건을 팔겠습니까? [예/아니요]: ")
-                if 다시팔기.lower() != "예":
-                    print("상점을 나갑니다. 로비로 돌아갑니다!")
-                    time.sleep(0.3)
-                    break
-
-        # ---------------- 인벤토리 확인 ----------------
-        elif 선택 == "3":
-            if 인벤토리:
-                print("\n현재 인벤토리:", 인벤토리)
-            else:
-                print("\n인벤토리가 비어 있습니다.")
-
-        # ---------------- 코인 확인 ----------------
-        elif 선택 == "4":
-            print(f"\n현재 코인: {coin}원")
-
-        # ---------------- 게임 종료 ----------------
-        elif 선택 == "5":
-            print("\n게임을 종료하시겠습니까?")
-            대답1 = input("[네/아니요]: ")
-            if 대답1 == "네":
-                print("낚시터를 종료합니다! 안녕히 가세요!!")
-                time.sleep(0.5)
-                break
-            else:
-                print("다시 낚시터로 가봅시다!")
-                time.sleep(0.4)
-
-        else:
-            print("잘못된 입력입니다. 1~5번 중 선택해주세요.")
-            time.sleep(0.4)
+# --------- 게임 종료 ----------
+elif menu == "게임 종료":
+    st.subheader("게임 종료")
+    st.write("게임을 종료합니다. 브라우저를 닫으세요!")
+~~~
