@@ -1,6 +1,13 @@
-~~~{"variant":"standard","title":"Streamlit 낚시 게임","id":"98642"}
+~~~{"variant":"standard","title":"실행 가능한 Streamlit 낚시 게임","id":"98721"}
 import streamlit as st
 import random
+
+# 페이지 설정 및 테마
+st.set_page_config(
+    page_title="🎣 낚시 게임",
+    layout="centered",
+    initial_sidebar_state="expanded"
+)
 
 # 세션 상태 초기화
 if "coin" not in st.session_state:
